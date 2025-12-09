@@ -20,44 +20,44 @@ const features = [
 
 const About = () => {
   return (
-    <section className="py-24 px-6 lg:px-8 bg-secondary text-secondary-foreground">
+    <section id="about" className="py-24 px-6 lg:px-8 bg-muted/30">
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="animate-fade-in">
-            <span className="text-sm font-medium tracking-wider uppercase text-primary mb-4 block">
-              About Africa Eyewear
+            <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-4 block">
+              About Africa Vision Emporium
             </span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="font-display text-4xl md:text-5xl font-semibold mb-6 tracking-tight">
               Vision Inspired by
               <br />
               <span className="text-primary">African Excellence</span>
             </h2>
-            <p className="text-lg text-secondary-foreground/80 mb-6 leading-relaxed">
-              At Africa Eyewear, we believe that eyewear is more than just an accessory—it's an expression of identity, culture, and style. Our exclusive collection bridges the gap between traditional African artistry and contemporary design.
+            <p className="text-lg text-foreground/70 mb-6 leading-relaxed font-light">
+              At Africa Vision Emporium, we believe that eyewear is more than just an accessory—it's an expression of identity, culture, and style. Based in Johannesburg, South Africa, our exclusive collection bridges the gap between traditional African artistry and contemporary design.
             </p>
-            <p className="text-lg text-secondary-foreground/80 leading-relaxed">
-              Every piece in our collection tells a story, celebrating the vibrant colors, patterns, and spirit of Africa while embracing modern sophistication for today's discerning customer.
+            <p className="text-lg text-foreground/70 leading-relaxed font-light">
+              Every piece in our collection tells a story, celebrating the vibrant colors, patterns, and spirit of South Africa while embracing modern sophistication for today's discerning customer. We're proud to be a homegrown South African brand, crafting eyewear that reflects our rich heritage.
             </p>
           </div>
 
-          <div className="grid gap-8 animate-fade-in-slow">
+          <div className="grid gap-6 animate-fade-in-slow">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <div 
                   key={index}
-                  className="flex gap-6 p-6 bg-background/5 backdrop-blur-sm rounded-2xl border border-border/10 hover:bg-background/10 transition-all duration-300"
+                  className="flex gap-6 p-6 bg-white rounded-lg border border-border/50 hover:border-primary/30 hover:shadow-[var(--shadow-soft)] transition-all duration-200"
                 >
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Icon className="w-6 h-6 text-primary" />
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2">
+                    <h3 className="font-semibold text-xl mb-2 text-foreground">
                       {feature.title}
                     </h3>
-                    <p className="text-secondary-foreground/70">
+                    <p className="text-foreground/60 font-light">
                       {feature.description}
                     </p>
                   </div>
