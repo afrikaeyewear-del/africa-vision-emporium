@@ -1,50 +1,79 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
 
 const products = [
   {
     id: 1,
-    name: "Sahara Classic",
-    price: "$249",
+    name: "Table Mountain Classic",
+    price: "R2,499",
     image: "/placeholder.svg",
-    description: "Timeless frames with desert-inspired tones"
+    description: "Timeless frames inspired by Cape Town's iconic landmark"
   },
   {
     id: 2,
-    name: "Serengeti Bold",
-    price: "$299",
+    name: "Kruger Bold",
+    price: "R2,999",
     image: "/placeholder.svg",
     description: "Statement pieces for the modern explorer"
   },
   {
     id: 3,
-    name: "Kilimanjaro Elite",
-    price: "$349",
+    name: "Drakensberg Elite",
+    price: "R3,499",
     image: "/placeholder.svg",
     description: "Premium craftsmanship meets elegance"
   },
   {
     id: 4,
-    name: "Zanzibar Essence",
-    price: "$279",
+    name: "Garden Route Essence",
+    price: "R2,799",
     image: "/placeholder.svg",
     description: "Coastal-inspired sophistication"
+  },
+  {
+    id: 5,
+    name: "Soweto Heritage",
+    price: "R2,199",
+    image: "/placeholder.svg",
+    description: "Celebrating South African culture and style"
+  },
+  {
+    id: 6,
+    name: "Winelands Vintage",
+    price: "R2,899",
+    image: "/placeholder.svg",
+    description: "Elegant frames with a touch of sophistication"
+  },
+  {
+    id: 7,
+    name: "Karoo Sunset",
+    price: "R2,399",
+    image: "/placeholder.svg",
+    description: "Warm tones inspired by the Karoo landscape"
+  },
+  {
+    id: 8,
+    name: "Safari Explorer",
+    price: "R3,199",
+    image: "/placeholder.svg",
+    description: "Adventure-ready frames for the bold"
   }
 ];
 
 const FeaturedProducts = () => {
   return (
-    <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-background to-muted/30">
+    <section className="py-24 px-6 lg:px-8 bg-white">
       <div className="container mx-auto">
         <div className="text-center mb-16 animate-fade-in">
-          <span className="text-sm font-medium tracking-wider uppercase text-primary mb-4 block">
+          <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-4 block">
             Our Collection
           </span>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-semibold text-foreground mb-4 tracking-tight">
             Featured Eyewear
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-foreground/60 text-lg max-w-2xl mx-auto font-light">
             Each piece is a celebration of craftsmanship, designed to complement your unique style
           </p>
         </div>
@@ -53,24 +82,19 @@ const FeaturedProducts = () => {
           {products.map((product, index) => (
             <Card 
               key={product.id} 
-              className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 hover:rotate-y-2 animate-scale-in transform-gpu"
-              style={{ 
-                animationDelay: `${index * 0.1}s`,
-                transformStyle: 'preserve-3d'
-              }}
+              className="group overflow-hidden border border-border/50 bg-white hover:border-primary/30 hover:shadow-[var(--shadow-medium)] transition-all duration-300 hover:-translate-y-1"
             >
               <CardContent className="p-0">
-                <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
+                <div className="relative aspect-square bg-muted/30 overflow-hidden">
                   <img 
                     src={product.image} 
                     alt={product.name}
-                    className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-2"
-                    style={{ transformStyle: 'preserve-3d' }}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-6" style={{ transform: 'translateZ(20px)' }}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-6">
                     <Button 
                       size="sm" 
-                      className="w-full bg-primary hover:bg-primary/90 shadow-[var(--shadow-luxury)] hover:shadow-[var(--shadow-elevated)] transition-all duration-300"
+                      className="w-full bg-primary hover:bg-primary/90 text-white shadow-[var(--shadow-medium)] transition-all duration-200"
                     >
                       <Eye className="mr-2 h-4 w-4" />
                       View Details
@@ -78,14 +102,14 @@ const FeaturedProducts = () => {
                   </div>
                 </div>
                 
-                <div className="p-6 bg-gradient-to-b from-card to-card/95">
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+                <div className="p-6 bg-white">
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-200">
                     {product.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <p className="text-sm text-foreground/60 mb-4 font-light">
                     {product.description}
                   </p>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  <p className="text-2xl font-semibold text-primary">
                     {product.price}
                   </p>
                 </div>
@@ -95,13 +119,15 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="text-center">
-          <Button 
-            size="lg"
-            variant="outline"
-            className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-medium shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-luxury)] transition-all duration-300 hover:-translate-y-1"
-          >
-            View Full Collection
-          </Button>
+          <Link to="/shop">
+            <Button 
+              size="lg"
+              variant="outline"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium px-8 py-6 transition-all duration-200 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)]"
+            >
+              View Full Collection
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
