@@ -3,6 +3,8 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, ShoppingBag } from "lucide-react";
+import { useEffect } from "react";
+import { initScrollAnimations } from "@/utils/scroll-animations";
 
 const products = [
   {
@@ -92,74 +94,102 @@ const products = [
 ];
 
 const Shop = () => {
+  useEffect(() => {
+    // Re-initialize scroll animations when component mounts
+    const cleanup = initScrollAnimations();
+    return cleanup;
+  }, []);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header />
-      <main className="pt-20">
+      <main className="pt-16 lg:pt-20">
         {/* Hero Section */}
-        <section className="py-16 px-6 lg:px-8 bg-white">
+        <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-border/50">
           <div className="container mx-auto text-center">
-            <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-4 block">
-              Shop
-            </span>
-            <h1 className="font-display text-4xl md:text-6xl font-semibold text-foreground mb-4 tracking-tight">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <div className="h-px w-8 bg-primary" />
+              <span className="text-xs font-semibold tracking-[0.15em] uppercase text-primary">
+                Shop
+              </span>
+              <div className="h-px w-8 bg-primary" />
+            </div>
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground mb-4 lg:mb-6 tracking-tight">
               Our Complete Collection
             </h1>
-            <p className="text-lg text-foreground/60 max-w-2xl mx-auto font-light">
+            <p className="text-base sm:text-lg lg:text-xl text-foreground/60 max-w-2xl mx-auto font-light leading-relaxed">
               Discover our full range of premium eyewear, proudly crafted in South Africa
             </p>
           </div>
         </section>
 
         {/* Products Grid */}
-        <section className="py-12 px-6 lg:px-8 bg-white">
-          <div className="container mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <section className="py-12 lg:py-16 px-0 bg-white geometric-accent relative overflow-hidden">
+          {/* Subtle pattern overlay */}
+          <div className="absolute inset-0 african-pattern opacity-20" />
+          
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* Results count */}
+            <div className="mb-10 flex items-center justify-between">
+              <p className="text-sm lg:text-base text-foreground/60 font-light">
+                Showing {products.length} products
+              </p>
+            </div>
+
+            {/* Products Grid - Premium Layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
               {products.map((product, index) => (
-                <Card 
-                  key={product.id} 
-                  className="group overflow-hidden border border-border/50 bg-white hover:border-primary/30 hover:shadow-[var(--shadow-medium)] transition-all duration-300 hover:-translate-y-1"
+                <div
+                  key={product.id}
+                  className="animate-on-scroll"
+                  style={{ transitionDelay: `${index * 0.05}s` }}
                 >
-                  <CardContent className="p-0">
-                    <div className="relative aspect-square bg-muted/30 overflow-hidden">
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-6">
-                        <Button 
-                          size="sm" 
-                          className="w-full bg-primary hover:bg-primary/90 text-white shadow-[var(--shadow-medium)] transition-all duration-200"
-                        >
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
-                        </Button>
+                  <Card 
+                    className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
+                  >
+                    <CardContent className="p-0">
+                      {/* Large Product Image */}
+                      <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          loading="lazy"
+                        />
+                        {/* Elegant Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-6">
+                          <Button 
+                            size="lg" 
+                            className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-8 py-6 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
+                          >
+                            <Eye className="mr-2 h-5 w-5" />
+                            View Details
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="p-6 bg-white">
-                      <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-200">
-                        {product.name}
-                      </h3>
-                      <p className="text-sm text-foreground/60 mb-4 font-light">
-                        {product.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-2xl font-semibold text-primary">
-                          {product.price}
-                        </p>
-                        <Button 
-                          size="sm"
-                          variant="outline"
-                          className="hover:bg-primary hover:text-white hover:border-primary transition-all duration-200"
-                        >
-                          <ShoppingBag className="h-4 w-4" />
-                        </Button>
+                      
+                      {/* Minimal Product Info */}
+                      <div className="p-6 lg:p-8 bg-white">
+                        <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                          {product.name}
+                        </h3>
+                        <div className="flex items-center justify-between">
+                          <p className="text-2xl lg:text-3xl font-bold text-primary">
+                            {product.price}
+                          </p>
+                          <Button 
+                            size="icon"
+                            variant="outline"
+                            className="h-12 w-12 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 rounded-md btn-glow"
+                            aria-label={`Add ${product.name} to cart`}
+                          >
+                            <ShoppingBag className="h-5 w-5" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               ))}
             </div>
           </div>
