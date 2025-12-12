@@ -1,57 +1,134 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Menu } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const Header = () => {
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Check initial state
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const isActive = (path: string) => {
+    if (path === "/" && location.pathname === "/") return true;
+    if (path !== "/" && location.pathname.startsWith(path)) return true;
+    return false;
+  };
+
+  const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      // If on home page, scroll to about section
+      const aboutSection = document.getElementById("about");
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } else {
+      // If on another page, navigate to home and then scroll
+      window.location.href = "/#about";
+    }
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-[var(--shadow-soft)]">
-      <div className="container mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled 
+          ? "bg-white/98 backdrop-blur-xl border-b border-border/50 shadow-[var(--shadow-soft)]" 
+          : "bg-white/0 backdrop-blur-none border-b border-transparent"
+      }`}
+    >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center group">
-            <h1 className="font-display text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-              Africa <span className="text-primary group-hover:text-primary/80 transition-colors">Vision</span> Emporium
+            <h1 className={`font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight transition-colors duration-500 ${
+              isScrolled 
+                ? "text-foreground" 
+                : "text-white drop-shadow-lg"
+            }`}>
+              <span className={`group-hover:opacity-80 transition-all duration-200 ${
+                isScrolled ? "text-primary" : "text-primary"
+              }`}>AFRIKA</span> EYEWEAR
             </h1>
           </Link>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-0.5">
             <Link 
               to="/" 
-              className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
+              className={`px-5 py-2.5 text-sm font-semibold transition-all duration-200 rounded-md ${
+                isActive("/") 
+                  ? "text-primary bg-primary/5" 
+                  : isScrolled
+                  ? "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
+                  : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
+              }`}
             >
               Home
             </Link>
             <Link 
               to="/shop" 
-              className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
+              className={`px-5 py-2.5 text-sm font-semibold transition-all duration-200 rounded-md ${
+                isActive("/shop") 
+                  ? "text-primary bg-primary/5" 
+                  : isScrolled
+                  ? "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
+                  : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
+              }`}
             >
               Shop
             </Link>
-            <Link 
-              to="/#about" 
-              className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
+            <a 
+              href="/#about"
+              onClick={handleAboutClick}
+              className={`px-5 py-2.5 text-sm font-semibold transition-all duration-200 rounded-md ${
+                isScrolled
+                  ? "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
+                  : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
+              }`}
             >
               About
-            </Link>
+            </a>
             <Link 
               to="/contact" 
-              className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
+              className={`px-5 py-2.5 text-sm font-semibold transition-all duration-200 rounded-md ${
+                isActive("/contact") 
+                  ? "text-primary bg-primary/5" 
+                  : isScrolled
+                  ? "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
+                  : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
+              }`}
             >
               Contact
             </Link>
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <Link to="/shop">
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="relative hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                className={`relative h-10 w-10 transition-all duration-200 ${
+                  isScrolled
+                    ? "hover:bg-primary/10 hover:text-primary"
+                    : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
+                }`}
+                aria-label="Shopping cart"
               >
                 <ShoppingBag className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold shadow-sm">
+                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold">
                   0
                 </span>
               </Button>
@@ -60,12 +137,67 @@ const Header = () => {
             <Button 
               variant="ghost" 
               size="icon"
-              className="md:hidden hover:bg-primary/10 hover:text-primary transition-all duration-200"
+              className={`md:hidden h-10 w-10 transition-all duration-200 ${
+                isScrolled
+                  ? "hover:bg-primary/10 hover:text-primary"
+                  : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
+              }`}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
             >
               <Menu className="h-5 w-5" />
             </Button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden border-t border-border/50 py-4 animate-fade-in">
+            <div className="flex flex-col space-y-1">
+              <Link 
+                to="/" 
+                className={`px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                  isActive("/") 
+                    ? "text-primary bg-primary/5" 
+                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/shop" 
+                className={`px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                  isActive("/shop") 
+                    ? "text-primary bg-primary/5" 
+                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Shop
+              </Link>
+              <a 
+                href="/#about"
+                onClick={handleAboutClick}
+                className="px-4 py-3 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-md transition-colors"
+              >
+                About
+              </a>
+              <Link 
+                to="/contact" 
+                className={`px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                  isActive("/contact") 
+                    ? "text-primary bg-primary/5" 
+                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact
+              </Link>
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   );
