@@ -8,51 +8,53 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Modern elegant color palette with red */
+    /* Premium white background */
     --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    /* Dark grey/black for text - luxury feel */
+    --foreground: 0 0% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 0 0% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 0 0% 8%;
 
-    /* Sophisticated red primary */
-    --primary: 0 72% 50%;
+    /* Premium red - strategic, not overwhelming */
+    --primary: 0 75% 48%;
     --primary-foreground: 0 0% 100%;
     
-    /* Deep charcoal secondary */
-    --secondary: 0 0% 20%;
+    /* Deep charcoal for secondary elements */
+    --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Soft neutral muted */
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    /* Subtle grey for muted backgrounds */
+    --muted: 0 0% 98%;
+    --muted-foreground: 0 0% 40%;
 
-    /* Rich red accent */
-    --accent: 0 65% 55%;
+    /* Rich red accent for highlights */
+    --accent: 0 70% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 72% 50%;
+    /* Clean borders */
+    --border: 0 0% 92%;
+    --input: 0 0% 92%;
+    --ring: 0 75% 48%;
 
     --radius: 0.5rem;
 
-    /* Modern gradients with red */
-    --gradient-primary: linear-gradient(135deg, hsl(0 72% 50%) 0%, hsl(0 65% 55%) 100%);
-    --gradient-elegant: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+    /* Premium gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 75% 48%) 0%, hsl(0 70% 52%) 100%);
+    --gradient-elegant: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 99%) 100%);
     
-    /* Refined shadows */
-    --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.08);
-    --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.12);
-    --shadow-luxury: 0 8px 32px -8px hsl(0 72% 50% / 0.25), 0 4px 16px -4px hsl(0 0% 0% / 0.15);
-    --shadow-3d: 0 12px 40px -8px hsl(0 0% 0% / 0.2), 0 6px 20px -6px hsl(0 72% 50% / 0.2);
-    --shadow-elevated: 0 16px 48px -12px hsl(0 0% 0% / 0.25);
+    /* Luxury shadows - refined and subtle */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.05), 0 1px 2px -1px hsl(0 0% 0% / 0.05);
+    --shadow-medium: 0 4px 12px -2px hsl(0 0% 0% / 0.08), 0 2px 4px -2px hsl(0 0% 0% / 0.06);
+    --shadow-luxury: 0 10px 30px -5px hsl(0 75% 48% / 0.15), 0 4px 12px -2px hsl(0 0% 0% / 0.1);
+    --shadow-3d: 0 20px 50px -10px hsl(0 0% 0% / 0.12), 0 8px 20px -4px hsl(0 75% 48% / 0.12);
+    --shadow-elevated: 0 25px 60px -12px hsl(0 0% 0% / 0.15);
     
     /* Smooth transitions */
     --transform-3d: perspective(1000px);
@@ -97,5 +99,69 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Premium typography improvements */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  body {
+    font-weight: 300;
+  }
+
+  /* Improved focus states for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Button glow effect */
+  .btn-glow {
+    transition: all 0.3s ease;
+  }
+  
+  .btn-glow:hover {
+    box-shadow: 0 0 25px hsl(0 75% 48% / 0.4), 0 0 50px hsl(0 75% 48% / 0.2);
+  }
+
+  /* African-inspired geometric pattern */
+  .african-pattern {
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 10px, hsl(0 75% 48% / 0.02) 10px, hsl(0 75% 48% / 0.02) 20px),
+      repeating-linear-gradient(-45deg, transparent, transparent 10px, hsl(0 75% 48% / 0.02) 10px, hsl(0 75% 48% / 0.02) 20px);
+  }
+
+  /* Subtle geometric accent */
+  .geometric-accent {
+    background: 
+      radial-gradient(circle at 20% 50%, hsl(0 75% 48% / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 50%, hsl(0 75% 48% / 0.03) 0%, transparent 50%);
+  }
+
+  /* Scroll-triggered animation classes */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Floating element */
+  .floating {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .floating-slow {
+    animation: float-slow 8s ease-in-out infinite;
   }
 }
