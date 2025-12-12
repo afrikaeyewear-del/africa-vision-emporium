@@ -5,6 +5,39 @@ import { Button } from "@/components/ui/button";
 import { Eye, ShoppingBag } from "lucide-react";
 import { useEffect } from "react";
 import { initScrollAnimations } from "@/utils/scroll-animations";
+import { useEffect, useState } from "react";
+import { getProducts } from "../lib/getProducts";
+
+export default function Products() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts().then((res) => {
+      setProducts(res.data.products.edges.map((e: any) => e.node));
+    });
+  }, []);
+
+  return (
+    <div>
+      <h1>Products</h1>
+
+      {products.length === 0 && <p>Loading...</p>}
+
+      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+        {products.map((p: any) => (
+          <div key={p.id} style={{ width: 200 }}>
+            <img
+              src={p.images.edges[0]?.node.url}
+              style={{ width: "100%", borderRadius: 10 }}
+            />
+            <h3>{p.title}</h3>
+            <p>R{p.variants.edges[0].node.price.amount}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const products = [
   {
