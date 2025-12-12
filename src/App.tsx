@@ -7,6 +7,17 @@ import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Products from "./components/Products";
+
+function App() {
+  return (
+    <div>
+      <Products />
+    </div>
+  );
+}
+
+export default App;
 
 const queryClient = new QueryClient();
 
