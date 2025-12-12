@@ -46,34 +46,38 @@ const Contact = () => {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="py-16 px-6 lg:px-8 bg-white">
+        <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-border/50">
           <div className="container mx-auto text-center">
-            <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-4 block">
-              Contact Us
-            </span>
-            <h1 className="font-display text-4xl md:text-6xl font-semibold text-foreground mb-4 tracking-tight">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <div className="h-px w-8 bg-primary" />
+              <span className="text-xs font-semibold tracking-[0.15em] uppercase text-primary">
+                Contact Us
+              </span>
+              <div className="h-px w-8 bg-primary" />
+            </div>
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground mb-4 lg:mb-6 tracking-tight">
               Get in Touch
             </h1>
-            <p className="text-lg text-foreground/60 max-w-2xl mx-auto font-light">
+            <p className="text-base sm:text-lg lg:text-xl text-foreground/60 max-w-2xl mx-auto font-light leading-relaxed">
               We'd love to hear from you. Reach out to us with any questions or inquiries.
             </p>
           </div>
         </section>
 
         {/* Contact Section */}
-        <section className="py-16 px-6 lg:px-8 bg-muted/30">
+        <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-muted/20">
           <div className="container mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
               {/* Contact Form */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Send us a Message</CardTitle>
-                  <CardDescription>
+              <Card className="border-border/40 shadow-[var(--shadow-soft)]">
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-2xl lg:text-3xl mb-2">Send us a Message</CardTitle>
+                  <CardDescription className="text-base">
                     Fill out the form below and we'll get back to you as soon as possible.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 lg:space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">Name *</Label>
@@ -135,7 +139,11 @@ const Contact = () => {
                       )}
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full">
+                    <Button 
+                      type="submit" 
+                      size="lg" 
+                      className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-medium px-8 py-6 text-base lg:text-lg shadow-[var(--shadow-medium)] transition-all duration-300 hover:shadow-[var(--shadow-luxury)] hover:-translate-y-0.5 rounded-md"
+                    >
                       Send Message
                     </Button>
                   </form>
@@ -143,22 +151,22 @@ const Contact = () => {
               </Card>
 
               {/* Contact Information */}
-              <div className="space-y-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Contact Information</CardTitle>
-                    <CardDescription>
+              <div className="space-y-6 lg:space-y-8">
+                <Card className="border-border/40 shadow-[var(--shadow-soft)]">
+                  <CardHeader className="pb-6">
+                    <CardTitle className="text-xl lg:text-2xl mb-2">Contact Information</CardTitle>
+                    <CardDescription className="text-sm lg:text-base">
                       Visit us or reach out through any of these channels.
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-6 h-6 text-primary" />
+                  <CardContent className="space-y-5 lg:space-y-6">
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+                        <MapPin className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1">Address</h3>
-                        <p className="text-muted-foreground">
+                        <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Address</h3>
+                        <p className="text-muted-foreground text-sm lg:text-base leading-relaxed">
                           123 Sandton Drive<br />
                           Sandton, Johannesburg<br />
                           2196, South Africa
@@ -166,37 +174,37 @@ const Contact = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Phone className="w-6 h-6 text-primary" />
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+                        <Phone className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1">Phone</h3>
-                        <p className="text-muted-foreground">
+                        <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Phone</h3>
+                        <a href="tel:+27111234567" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
                           +27 (0) 11 123 4567
-                        </p>
+                        </a>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Mail className="w-6 h-6 text-primary" />
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+                        <Mail className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1">Email</h3>
-                        <p className="text-muted-foreground">
+                        <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Email</h3>
+                        <a href="mailto:info@africaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
                           info@africaeyewear.co.za
-                        </p>
+                        </a>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Clock className="w-6 h-6 text-primary" />
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+                        <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1">Business Hours</h3>
-                        <p className="text-muted-foreground">
+                        <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Business Hours</h3>
+                        <p className="text-muted-foreground text-sm lg:text-base leading-relaxed">
                           Monday - Friday: 9:00 AM - 6:00 PM<br />
                           Saturday: 9:00 AM - 4:00 PM<br />
                           Sunday: Closed
@@ -206,27 +214,27 @@ const Contact = () => {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Why Choose Us?</CardTitle>
+                <Card className="border-border/40 shadow-[var(--shadow-soft)]">
+                  <CardHeader className="pb-6">
+                    <CardTitle className="text-xl lg:text-2xl">Why Choose Us?</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-3 text-muted-foreground">
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-1">✓</span>
-                        <span>Proudly South African owned and operated</span>
+                    <ul className="space-y-3 lg:space-y-4">
+                      <li className="flex items-start gap-3">
+                        <span className="text-primary mt-0.5 font-semibold text-lg">✓</span>
+                        <span className="text-muted-foreground text-sm lg:text-base">Proudly South African owned and operated</span>
                       </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-1">✓</span>
-                        <span>Premium quality eyewear with local craftsmanship</span>
+                      <li className="flex items-start gap-3">
+                        <span className="text-primary mt-0.5 font-semibold text-lg">✓</span>
+                        <span className="text-muted-foreground text-sm lg:text-base">Premium quality eyewear with local craftsmanship</span>
                       </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-1">✓</span>
-                        <span>Expert fitting and consultation services</span>
+                      <li className="flex items-start gap-3">
+                        <span className="text-primary mt-0.5 font-semibold text-lg">✓</span>
+                        <span className="text-muted-foreground text-sm lg:text-base">Expert fitting and consultation services</span>
                       </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-1">✓</span>
-                        <span>Fast and reliable delivery across South Africa</span>
+                      <li className="flex items-start gap-3">
+                        <span className="text-primary mt-0.5 font-semibold text-lg">✓</span>
+                        <span className="text-muted-foreground text-sm lg:text-base">Fast and reliable delivery across South Africa</span>
                       </li>
                     </ul>
                   </CardContent>
