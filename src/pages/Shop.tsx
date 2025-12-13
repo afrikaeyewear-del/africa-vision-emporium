@@ -287,7 +287,7 @@ const Shop = () => {
                       >
                         <CardContent className="p-0">
                           {/* Large Product Image - Clickable */}
-                          <Link to={`/shop#${product.handle}`} className="block">
+                          <Link to={`/product/${product.handle}`} className="block">
                             <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
                               <img 
                                 src={product.image} 
@@ -302,7 +302,7 @@ const Shop = () => {
                                   asChild
                                   className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-8 py-6 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
                                 >
-                                  <Link to={`/shop#${product.handle}`}>
+                                  <Link to={`/product/${product.handle}`}>
                                     <Eye className="mr-2 h-5 w-5" />
                                     View Details
                                   </Link>
@@ -313,7 +313,7 @@ const Shop = () => {
                           
                           {/* Minimal Product Info */}
                           <div className="p-6 lg:p-8 bg-white">
-                            <Link to={`/shop#${product.handle}`}>
+                            <Link to={`/product/${product.handle}`}>
                               <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300 cursor-pointer">
                                 {product.name}
                               </h3>
@@ -329,21 +329,21 @@ const Shop = () => {
                             
                             {/* Quantity Selector and Add to Cart */}
                             {product.available && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                 {/* Quantity Selector */}
-                                <div className="flex items-center border border-border rounded-md">
+                                <div className="flex items-center border border-border rounded-md flex-shrink-0">
                                   <Button
                                     type="button"
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 rounded-r-none"
                                     onClick={(e) => handleQuantityChange(e, product.id, -1)}
-                                    disabled={quantity <= 1}
+                                    disabled={quantities[product.id] <= 1}
                                   >
                                     <Minus className="h-4 w-4" />
                                   </Button>
                                   <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
-                                    {quantity}
+                                    {quantities[product.id] || 1}
                                   </span>
                                   <Button
                                     type="button"
@@ -351,7 +351,7 @@ const Shop = () => {
                                     size="icon"
                                     className="h-8 w-8 rounded-l-none"
                                     onClick={(e) => handleQuantityChange(e, product.id, 1)}
-                                    disabled={quantity >= 10}
+                                    disabled={(quantities[product.id] || 1) >= 10}
                                   >
                                     <Plus className="h-4 w-4" />
                                   </Button>
@@ -360,12 +360,12 @@ const Shop = () => {
                                 {/* Add to Cart Button */}
                                 <Button 
                                   size="sm"
-                                  className="flex-1 btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold shadow-[var(--shadow-medium)] transition-all duration-300 rounded-md disabled:opacity-50"
+                                  className="flex-1 min-w-0 btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold shadow-[var(--shadow-medium)] transition-all duration-300 rounded-md disabled:opacity-50 whitespace-nowrap"
                                   onClick={(e) => handleAddToCart(e, product)}
                                   disabled={isAddingToCart === product.id || !product.available}
                                 >
-                                  <ShoppingBag className="mr-2 h-4 w-4" />
-                                  {isAddingToCart === product.id ? "Adding..." : "Add to Cart"}
+                                  <ShoppingBag className="mr-2 h-4 w-4 flex-shrink-0" />
+                                  <span className="truncate">{isAddingToCart === product.id ? "Adding..." : "Add to Cart"}</span>
                                 </Button>
                               </div>
                             )}
