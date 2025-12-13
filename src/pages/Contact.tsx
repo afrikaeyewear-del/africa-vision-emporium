@@ -192,8 +192,8 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Email</h3>
-                        <a href="mailto:info@africaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
-                          info@africaeyewear.co.za
+                        <a href="mailto:info@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
+                          info@afrikaeyewear.co.za
                         </a>
                       </div>
                     </div>
