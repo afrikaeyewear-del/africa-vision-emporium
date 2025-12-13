@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -12,9 +13,19 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
           {/* Brand */}
             <div className="lg:col-span-2">
-              <h3 className="font-display text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">
-                <span className="text-primary">AFRIKA</span> EYEWEAR
-            </h3>
+              <Link to="/" className="flex items-center gap-3 mb-4 lg:mb-6 group">
+                <span className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-white transition-opacity duration-500 group-hover:opacity-80">
+                  Afrika
+                </span>
+                <img 
+                  src={logo} 
+                  alt="Afrika Eyewear Logo" 
+                  className="h-8 lg:h-16 transition-opacity duration-500 group-hover:opacity-80" 
+                />
+                <span className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-white transition-opacity duration-500 group-hover:opacity-80">
+                  Eyewear
+                </span>
+              </Link>
               <p className="text-white/70 mb-2 max-w-md font-light leading-relaxed text-sm lg:text-base">
                 CRAFTED FOR THE BOLD
               </p>
