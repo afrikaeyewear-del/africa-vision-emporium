@@ -50,6 +50,16 @@ export interface Product {
   available: boolean;
 }
 
+export interface ProductDetail extends Product {
+  images: string[];
+  variants: Array<{
+    id: string;
+    title: string;
+    price: string;
+    available: boolean;
+  }>;
+}
+
 const PRODUCTS_QUERY = `
   query getProducts($first: Int!) {
     products(first: $first) {
@@ -175,9 +185,9 @@ export async function getProducts(first: number = 20): Promise<Product[]> {
 }
 
 /**
- * Fetch a single product by handle
+ * Fetch a single product by handle (returns full product details)
  */
-export async function getProduct(handle: string): Promise<Product | null> {
+export async function getProduct(handle: string): Promise<ProductDetail | null> {
   try {
     const response = await shopify.request<{
       product: ShopifyProduct | null;
@@ -189,17 +199,30 @@ export async function getProduct(handle: string): Promise<Product | null> {
 
     const product = response.data.product;
     const variant = product.variants.edges[0]?.node;
-    const image = product.images.edges[0]?.node;
+    const firstImage = product.images.edges[0]?.node;
+
+    // Get all images
+    const images = product.images.edges.map(edge => edge.node.url);
+
+    // Get all variants
+    const variants = product.variants.edges.map(edge => ({
+      id: edge.node.id,
+      title: edge.node.title,
+      price: formatPrice(edge.node.price.amount),
+      available: edge.node.availableForSale,
+    }));
 
     return {
       id: product.id,
       name: product.title,
       price: formatPrice(product.priceRange.minVariantPrice.amount),
-      image: image?.url || '/placeholder.svg',
+      image: firstImage?.url || '/placeholder.svg',
+      images: images.length > 0 ? images : ['/placeholder.svg'],
       description: product.description || '',
       handle: product.handle,
       variantId: variant?.id || '',
       available: variant?.availableForSale || false,
+      variants,
     };
   } catch (error) {
     console.error('Error fetching product:', error);
