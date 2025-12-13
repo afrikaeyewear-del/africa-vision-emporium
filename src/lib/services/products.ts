@@ -212,6 +212,9 @@ export async function getProduct(handle: string): Promise<Product | null> {
  */
 function formatPrice(amount: string): string {
   const numAmount = parseFloat(amount);
+  if (isNaN(numAmount)) {
+    return 'R0.00';
+  }
   return `R${numAmount.toLocaleString('en-ZA', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
