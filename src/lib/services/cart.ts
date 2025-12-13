@@ -3,7 +3,7 @@
  * Handles cart operations using Shopify Storefront API
  */
 
-import { shopify } from '../shopify';
+import { shopify, isShopifyConfigured } from '../shopify';
 
 export interface Cart {
   id: string;
@@ -213,7 +213,9 @@ export async function createCart(): Promise<Cart> {
     }
 
     // Store cart ID in localStorage
-    localStorage.setItem('shopify_cart_id', response.data.cartCreate.cart.id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('shopify_cart_id', response.data.cartCreate.cart.id);
+    }
 
     return response.data.cartCreate.cart;
   } catch (error) {
@@ -281,6 +283,10 @@ export async function addToCart(
  * Get or create cart (helper function)
  */
 export async function getOrCreateCart(): Promise<Cart> {
+  if (typeof window === 'undefined') {
+    throw new Error('localStorage is not available');
+  }
+
   const cartId = localStorage.getItem('shopify_cart_id');
 
   if (cartId) {
