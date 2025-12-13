@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getOrCreateCart, addToCart, getCart, Cart } from '@/lib/services/cart';
+import { getOrCreateCart, addToCart, getCart, removeFromCart, updateCartLine, Cart } from '@/lib/services/cart';
 import { isShopifyConfigured } from '@/lib/shopify';
 
 interface CartContextType {
@@ -7,6 +7,8 @@ interface CartContextType {
   cartCount: number;
   isLoading: boolean;
   addItemToCart: (variantId: string, quantity: number) => Promise<void>;
+  removeItemFromCart: (lineId: string) => Promise<void>;
+  updateItemQuantity: (lineId: string, quantity: number) => Promise<void>;
   refreshCart: () => Promise<void>;
 }
 
@@ -62,6 +64,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const removeItemFromCart = async (lineId: string) => {
+    if (!isShopifyConfigured || !cart) {
+      throw new Error('Shopify is not configured or cart is empty');
+    }
+
+    try {
+      const updatedCart = await removeFromCart(cart.id, lineId);
+      setCart(updatedCart);
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      throw error;
+    }
+  };
+
+  const updateItemQuantity = async (lineId: string, quantity: number) => {
+    if (!isShopifyConfigured || !cart) {
+      throw new Error('Shopify is not configured or cart is empty');
+    }
+
+    if (quantity <= 0) {
+      await removeItemFromCart(lineId);
+      return;
+    }
+
+    try {
+      const updatedCart = await updateCartLine(cart.id, lineId, quantity);
+      setCart(updatedCart);
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     refreshCart();
 
@@ -85,6 +122,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartCount,
         isLoading,
         addItemToCart,
+        removeItemFromCart,
+        updateItemQuantity,
         refreshCart,
       }}
     >
