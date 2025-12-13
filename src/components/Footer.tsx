@@ -10,7 +10,7 @@ const Footer = () => {
         {/* Main Footer Content */}
         <div className="py-16 lg:py-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
-            {/* Brand */}
+          {/* Brand */}
             <div className="lg:col-span-2">
               <h3 className="font-display text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">
                 <span className="text-primary">AFRIKA</span> EYEWEAR
@@ -19,8 +19,8 @@ const Footer = () => {
                 CRAFTED FOR THE BOLD
               </p>
               <p className="text-white/70 mb-6 lg:mb-8 max-w-md font-light leading-relaxed text-sm lg:text-base">
-                Where modern elegance meets South African heritage. Discover exclusive eyewear designs that celebrate culture and contemporary style. Proudly South African.
-              </p>
+              Where modern elegance meets South African heritage. Discover exclusive eyewear designs that celebrate culture and contemporary style. Proudly South African.
+            </p>
               {/* Social Links */}
               <div className="flex items-center gap-3">
                 <a 
@@ -29,63 +29,74 @@ const Footer = () => {
                   aria-label="Facebook"
                 >
                   <Facebook className="w-4 h-4" />
-                </a>
+              </a>
                 <a 
                   href="#" 
                   className="w-10 h-10 rounded-full bg-white/5 hover:bg-primary border border-white/10 hover:border-primary flex items-center justify-center transition-all duration-200"
                   aria-label="Instagram"
                 >
                   <Instagram className="w-4 h-4" />
-                </a>
+              </a>
                 <a 
                   href="#" 
                   className="w-10 h-10 rounded-full bg-white/5 hover:bg-primary border border-white/10 hover:border-primary flex items-center justify-center transition-all duration-200"
                   aria-label="Twitter"
                 >
                   <Twitter className="w-4 h-4" />
-                </a>
-              </div>
+              </a>
             </div>
+          </div>
 
-            {/* Quick Links */}
-            <div>
+          {/* Quick Links */}
+          <div>
               <h4 className="font-semibold text-base lg:text-lg mb-5 lg:mb-6">Quick Links</h4>
-              <ul className="space-y-3">
-                <li>
+            <ul className="space-y-3">
+              <li>
                   <Link 
                     to="/shop" 
                     className="text-white/70 hover:text-primary transition-colors duration-200 font-light text-sm lg:text-base inline-block"
                   >
-                    Shop
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/#about" 
-                    className="text-white/70 hover:text-primary transition-colors duration-200 font-light text-sm lg:text-base inline-block"
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
+                  Shop
+                </Link>
+              </li>
+              <li>
+                <a 
+                  href="/#about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (window.location.pathname === "/") {
+                      const aboutSection = document.getElementById("about");
+                      if (aboutSection) {
+                        aboutSection.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    } else {
+                      window.location.href = "/#about";
+                    }
+                  }}
+                  className="text-white/70 hover:text-primary transition-colors duration-200 font-light text-sm lg:text-base inline-block"
+                >
+                  About Us
+                </a>
+              </li>
+              <li>
                   <Link 
                     to="/contact" 
                     className="text-white/70 hover:text-primary transition-colors duration-200 font-light text-sm lg:text-base inline-block"
                   >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            {/* Contact */}
-            <div>
+          {/* Contact */}
+          <div>
               <h4 className="font-semibold text-base lg:text-lg mb-5 lg:mb-6">Contact</h4>
               <ul className="space-y-3 text-white/70 font-light text-sm lg:text-base">
                 <li className="flex items-start gap-2">
                   <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <a href="mailto:info@africaeyewear.co.za" className="hover:text-primary transition-colors duration-200">
-                    info@africaeyewear.co.za
+                  <a href="mailto:info@afrikaeyewear.co.za" className="hover:text-primary transition-colors duration-200">
+                    info@afrikaeyewear.co.za
                   </a>
                 </li>
                 <li className="flex items-start gap-2">
@@ -98,7 +109,7 @@ const Footer = () => {
                   <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <span>123 Sandton Drive,<br />Sandton, Johannesburg, 2196</span>
                 </li>
-              </ul>
+            </ul>
             </div>
           </div>
         </div>
