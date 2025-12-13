@@ -28,7 +28,7 @@ interface ShopifyResponse<T> {
  */
 export async function shopifyRequest<T>(
   query: string,
-  variables: Record<string, any> = {}
+  variables: Record<string, unknown> = {}
 ): Promise<ShopifyResponse<T>> {
   if (!isShopifyConfigured) {
     throw new Error('Shopify credentials are not configured. Please set VITE_SHOPIFY_STORE_DOMAIN and VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN in your .env file.');
