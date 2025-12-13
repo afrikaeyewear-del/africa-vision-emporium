@@ -3,135 +3,216 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, ShoppingBag } from "lucide-react";
-import { useEffect } from "react";
-import { initScrollAnimations } from "@/utils/scroll-animations";
-import { useEffect, useState } from "react";
-import { getProducts } from "../lib/getProducts";
+import { useQuery } from "@tanstack/react-query";
+import { getProducts } from "@/lib/services/products";
+import { getOrCreateCart, addToCart } from "@/lib/services/cart";
+import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 
-export default function Products() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    getProducts().then((res) => {
-      setProducts(res.data.products.edges.map((e: any) => e.node));
-    });
-  }, []);
-
-  return (
-    <div>
-      <h1>Products</h1>
-
-      {products.length === 0 && <p>Loading...</p>}
-
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-        {products.map((p: any) => (
-          <div key={p.id} style={{ width: 200 }}>
-            <img
-              src={p.images.edges[0]?.node.url}
-              style={{ width: "100%", borderRadius: 10 }}
-            />
-            <h3>{p.title}</h3>
-            <p>R{p.variants.edges[0].node.price.amount}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-const products = [
+// Fallback products if Shopify is not configured
+const fallbackProducts: Array<{
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  description: string;
+  handle: string;
+  variantId: string;
+  available: boolean;
+}> = [
   {
-    id: 1,
+    id: "1",
     name: "Table Mountain Classic",
     price: "R2,499",
     image: "/placeholder.svg",
-    description: "Timeless frames inspired by Cape Town's iconic landmark"
+    description: "Timeless frames inspired by Cape Town's iconic landmark",
+    handle: "table-mountain-classic",
+    variantId: "variant-1",
+    available: true,
   },
   {
-    id: 2,
+    id: "2",
     name: "Kruger Bold",
     price: "R2,999",
     image: "/placeholder.svg",
-    description: "Statement pieces for the modern explorer"
+    description: "Statement pieces for the modern explorer",
+    handle: "kruger-bold",
+    variantId: "variant-2",
+    available: true,
   },
   {
-    id: 3,
+    id: "3",
     name: "Drakensberg Elite",
     price: "R3,499",
     image: "/placeholder.svg",
-    description: "Premium craftsmanship meets elegance"
+    description: "Premium craftsmanship meets elegance",
+    handle: "drakensberg-elite",
+    variantId: "variant-3",
+    available: true,
   },
   {
-    id: 4,
+    id: "4",
     name: "Garden Route Essence",
     price: "R2,799",
     image: "/placeholder.svg",
-    description: "Coastal-inspired sophistication"
+    description: "Coastal-inspired sophistication",
+    handle: "garden-route-essence",
+    variantId: "variant-4",
+    available: true,
   },
   {
-    id: 5,
+    id: "5",
     name: "Soweto Heritage",
     price: "R2,199",
     image: "/placeholder.svg",
-    description: "Celebrating South African culture and style"
+    description: "Celebrating South African culture and style",
+    handle: "soweto-heritage",
+    variantId: "variant-5",
+    available: true,
   },
   {
-    id: 6,
+    id: "6",
     name: "Winelands Vintage",
     price: "R2,899",
     image: "/placeholder.svg",
-    description: "Elegant frames with a touch of sophistication"
+    description: "Elegant frames with a touch of sophistication",
+    handle: "winelands-vintage",
+    variantId: "variant-6",
+    available: true,
   },
   {
-    id: 7,
+    id: "7",
     name: "Karoo Sunset",
     price: "R2,399",
     image: "/placeholder.svg",
-    description: "Warm tones inspired by the Karoo landscape"
+    description: "Warm tones inspired by the Karoo landscape",
+    handle: "karoo-sunset",
+    variantId: "variant-7",
+    available: true,
   },
   {
-    id: 8,
+    id: "8",
     name: "Safari Explorer",
     price: "R3,199",
     image: "/placeholder.svg",
-    description: "Adventure-ready frames for the bold"
+    description: "Adventure-ready frames for the bold",
+    handle: "safari-explorer",
+    variantId: "variant-8",
+    available: true,
   },
   {
-    id: 9,
+    id: "9",
     name: "Johannesburg Urban",
     price: "R2,599",
     image: "/placeholder.svg",
-    description: "Modern city style with African flair"
+    description: "Modern city style with African flair",
+    handle: "johannesburg-urban",
+    variantId: "variant-9",
+    available: true,
   },
   {
-    id: 10,
+    id: "10",
     name: "Cape Point Premium",
     price: "R3,299",
     image: "/placeholder.svg",
-    description: "Luxury frames for the discerning customer"
+    description: "Luxury frames for the discerning customer",
+    handle: "cape-point-premium",
+    variantId: "variant-10",
+    available: true,
   },
   {
-    id: 11,
+    id: "11",
     name: "Blyde River Canyon",
     price: "R2,699",
     image: "/placeholder.svg",
-    description: "Natural beauty captured in elegant design"
+    description: "Natural beauty captured in elegant design",
+    handle: "blyde-river-canyon",
+    variantId: "variant-11",
+    available: true,
   },
   {
-    id: 12,
+    id: "12",
     name: "Robben Island Classic",
     price: "R2,449",
     image: "/placeholder.svg",
-    description: "Heritage-inspired frames with modern appeal"
-  }
+    description: "Heritage-inspired frames with modern appeal",
+    handle: "robben-island-classic",
+    variantId: "variant-12",
+    available: true,
+  },
 ];
 
 const Shop = () => {
-  useEffect(() => {
-    // Re-initialize scroll animations when component mounts
-    const cleanup = initScrollAnimations();
-    return cleanup;
-  }, []);
+  const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null);
+
+  // Fetch products from Shopify
+  const { data: shopifyProducts, isLoading, error } = useQuery({
+    queryKey: ['shopify-products'],
+    queryFn: async () => {
+      try {
+        return await getProducts(50);
+      } catch (err) {
+        // If Shopify is not configured, return empty array to use fallback
+        console.warn('Shopify products not available, using fallback:', err);
+        return [];
+      }
+    },
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+    enabled: true,
+    // Add timeout to prevent hanging
+    gcTime: 5 * 60 * 1000,
+  });
+
+  // Use Shopify products if available, otherwise use fallback
+  const products = shopifyProducts && shopifyProducts.length > 0 
+    ? shopifyProducts 
+    : fallbackProducts;
+
+  const handleAddToCart = async (product: typeof products[0]) => {
+    if (!product.variantId || !product.available) {
+      toast({
+        title: "Product unavailable",
+        description: "This product is currently not available.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if Shopify is configured
+    const { isShopifyConfigured } = await import('@/lib/shopify').catch(() => ({ isShopifyConfigured: false }));
+    if (!isShopifyConfigured) {
+      toast({
+        title: "Shopify not configured",
+        description: "Please configure Shopify to enable cart functionality.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAddingToCart(product.id);
+    try {
+      const cart = await getOrCreateCart();
+      await addToCart(cart.id, product.variantId, 1);
+      
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
+      });
+
+      // Update cart count in header (you may want to add a cart context for this)
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -147,7 +228,7 @@ const Shop = () => {
               </span>
               <div className="h-px w-8 bg-primary" />
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground mb-4 lg:mb-6 tracking-tight">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-4 lg:mb-6 tracking-tight">
               Our Complete Collection
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-foreground/60 max-w-2xl mx-auto font-light leading-relaxed">
@@ -162,69 +243,89 @@ const Shop = () => {
           <div className="absolute inset-0 african-pattern opacity-20" />
           
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* Results count */}
+            {/* Results count - Always show */}
             <div className="mb-10 flex items-center justify-between">
               <p className="text-sm lg:text-base text-foreground/60 font-light">
-                Showing {products.length} products
+                {isLoading ? (
+                  'Loading products...'
+                ) : (
+                  `Showing ${products.length} ${products.length === 1 ? 'product' : 'products'}`
+                )}
               </p>
             </div>
 
-            {/* Products Grid - Premium Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-              {products.map((product, index) => (
-                <div
-                  key={product.id}
-                  className="animate-on-scroll"
-                  style={{ transitionDelay: `${index * 0.05}s` }}
-                >
-                  <Card 
-                    className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
+            {/* Error State - Only show if there's an error and no products at all */}
+            {error && !shopifyProducts && products.length === 0 && (
+              <div className="text-center py-20">
+                <p className="text-foreground/60 font-light mb-4">
+                  Unable to load products. Please try again later.
+                </p>
+              </div>
+            )}
+
+            {/* Products Grid - Premium Layout - Show fallback products immediately */}
+            {products.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+                {products.map((product, index) => (
+                  <div
+                    key={product.id}
+                    className="animate-on-scroll"
+                    style={{ transitionDelay: `${index * 0.05}s` }}
                   >
-                    <CardContent className="p-0">
-                      {/* Large Product Image */}
-                      <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          loading="lazy"
-                        />
-                        {/* Elegant Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-6">
-                          <Button 
-                            size="lg" 
-                            className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-8 py-6 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
-                          >
-                            <Eye className="mr-2 h-5 w-5" />
-                            View Details
-                          </Button>
+                    <Card 
+                      className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
+                    >
+                      <CardContent className="p-0">
+                        {/* Large Product Image */}
+                        <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
+                          <img 
+                            src={product.image} 
+                            alt={product.name}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            loading="lazy"
+                          />
+                          {/* Elegant Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-6">
+                            <Button 
+                              size="lg" 
+                              className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-8 py-6 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
+                            >
+                              <Eye className="mr-2 h-5 w-5" />
+                              View Details
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      
-                      {/* Minimal Product Info */}
-                      <div className="p-6 lg:p-8 bg-white">
-                        <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center justify-between">
-                          <p className="text-2xl lg:text-3xl font-bold text-primary">
-                            {product.price}
-                          </p>
-                          <Button 
-                            size="icon"
-                            variant="outline"
-                            className="h-12 w-12 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 rounded-md btn-glow"
-                            aria-label={`Add ${product.name} to cart`}
-                          >
-                            <ShoppingBag className="h-5 w-5" />
-                          </Button>
+                        
+                        {/* Minimal Product Info */}
+                        <div className="p-6 lg:p-8 bg-white">
+                          <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                            {product.name}
+                          </h3>
+                          <div className="flex items-center justify-between">
+                            <p className="text-2xl lg:text-3xl font-bold text-primary">
+                              {product.price}
+                            </p>
+                            <Button 
+                              size="icon"
+                              variant="outline"
+                              className="h-12 w-12 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 rounded-md btn-glow disabled:opacity-50"
+                              aria-label={`Add ${product.name} to cart`}
+                              onClick={() => handleAddToCart(product)}
+                              disabled={isAddingToCart === product.id || !product.available}
+                            >
+                              <ShoppingBag className="h-5 w-5" />
+                            </Button>
+                          </div>
+                          {!product.available && (
+                            <p className="text-xs text-foreground/40 mt-2">Out of stock</p>
+                          )}
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
-            </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </main>
