@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="lg:col-span-2">
               <h3 className="font-display text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">
                 <span className="text-primary">AFRIKA</span> EYEWEAR
-              </h3>
+            </h3>
               <p className="text-white/70 mb-2 max-w-md font-light leading-relaxed text-sm lg:text-base">
                 CRAFTED FOR THE BOLD
               </p>
