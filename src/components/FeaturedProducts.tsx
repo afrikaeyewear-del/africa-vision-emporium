@@ -135,12 +135,6 @@ const ProductCard = ({ product, index }: { product: typeof products[0], index: n
 };
 
 const FeaturedProducts = () => {
-  useEffect(() => {
-    // Initialize scroll animations
-    const cleanup = initScrollAnimations();
-    return cleanup;
-  }, []);
-
   return (
     <section className="py-20 lg:py-32 px-0 bg-white geometric-accent relative overflow-hidden">
       {/* Full-width background pattern */}
