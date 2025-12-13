@@ -2,10 +2,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, ShoppingBag } from "lucide-react";
+import { Eye, ShoppingBag, Plus, Minus } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "@/lib/services/products";
-import { getOrCreateCart, addToCart } from "@/lib/services/cart";
+import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -144,6 +145,8 @@ const fallbackProducts: Array<{
 
 const Shop = () => {
   const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const { addItemToCart } = useCart();
 
   // Fetch products from Shopify
   const { data: shopifyProducts, isLoading, error } = useQuery({
@@ -169,7 +172,10 @@ const Shop = () => {
     ? shopifyProducts 
     : fallbackProducts;
 
-  const handleAddToCart = async (product: typeof products[0]) => {
+  const handleAddToCart = async (e: React.MouseEvent, product: typeof products[0]) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (!product.variantId || !product.available) {
       toast({
         title: "Product unavailable",
@@ -179,28 +185,21 @@ const Shop = () => {
       return;
     }
 
-    // Check if Shopify is configured
-    const { isShopifyConfigured } = await import('@/lib/shopify').catch(() => ({ isShopifyConfigured: false }));
-    if (!isShopifyConfigured) {
-      toast({
-        title: "Shopify not configured",
-        description: "Please configure Shopify to enable cart functionality.",
-        variant: "destructive",
-      });
-      return;
-    }
+    const quantity = quantities[product.id] || 1;
 
     setIsAddingToCart(product.id);
     try {
-      const cart = await getOrCreateCart();
-      await addToCart(cart.id, product.variantId, 1);
+      await addItemToCart(product.variantId, quantity);
       
       toast({
         title: "Added to cart",
-        description: `${product.name} has been added to your cart.`,
+        description: `${product.name} (${quantity}x) has been added to your cart.`,
       });
 
-      // Update cart count in header (you may want to add a cart context for this)
+      // Reset quantity after adding
+      setQuantities(prev => ({ ...prev, [product.id]: 1 }));
+
+      // Dispatch event to update cart count in header
       window.dispatchEvent(new CustomEvent('cart-updated'));
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -212,6 +211,15 @@ const Shop = () => {
     } finally {
       setIsAddingToCart(null);
     }
+  };
+
+  const handleQuantityChange = (e: React.MouseEvent, productId: string, delta: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(1, Math.min(10, (prev[productId] || 1) + delta))
+    }));
   };
 
   return (
@@ -266,64 +274,107 @@ const Shop = () => {
             {/* Products Grid - Premium Layout - Show fallback products immediately */}
             {products.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-                {products.map((product, index) => (
-                  <div
-                    key={product.id}
-                    className="animate-on-scroll"
-                    style={{ transitionDelay: `${index * 0.05}s` }}
-                  >
-                    <Card 
-                      className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
+                {products.map((product, index) => {
+                  const quantity = quantities[product.id] || 1;
+                  return (
+                    <div
+                      key={product.id}
+                      className="animate-on-scroll"
+                      style={{ transitionDelay: `${index * 0.05}s` }}
                     >
-                      <CardContent className="p-0">
-                        {/* Large Product Image */}
-                        <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
-                          <img 
-                            src={product.image} 
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            loading="lazy"
-                          />
-                          {/* Elegant Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-6">
-                            <Button 
-                              size="lg" 
-                              className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-8 py-6 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
-                            >
-                              <Eye className="mr-2 h-5 w-5" />
-                              View Details
-                            </Button>
+                      <Card 
+                        className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
+                      >
+                        <CardContent className="p-0">
+                          {/* Large Product Image - Clickable */}
+                          <Link to={`/shop#${product.handle}`} className="block">
+                            <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
+                              <img 
+                                src={product.image} 
+                                alt={product.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                loading="lazy"
+                              />
+                              {/* Elegant Overlay */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-6">
+                                <Button 
+                                  size="lg" 
+                                  asChild
+                                  className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-8 py-6 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
+                                >
+                                  <Link to={`/shop#${product.handle}`}>
+                                    <Eye className="mr-2 h-5 w-5" />
+                                    View Details
+                                  </Link>
+                                </Button>
+                              </div>
+                            </div>
+                          </Link>
+                          
+                          {/* Minimal Product Info */}
+                          <div className="p-6 lg:p-8 bg-white">
+                            <Link to={`/shop#${product.handle}`}>
+                              <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300 cursor-pointer">
+                                {product.name}
+                              </h3>
+                            </Link>
+                            <div className="flex items-center justify-between mb-4">
+                              <p className="text-2xl lg:text-3xl font-bold text-primary">
+                                {product.price}
+                              </p>
+                              {!product.available && (
+                                <span className="text-xs text-foreground/40 px-2 py-1 bg-muted rounded">Out of stock</span>
+                              )}
+                            </div>
+                            
+                            {/* Quantity Selector and Add to Cart */}
+                            {product.available && (
+                              <div className="flex items-center gap-2">
+                                {/* Quantity Selector */}
+                                <div className="flex items-center border border-border rounded-md">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-r-none"
+                                    onClick={(e) => handleQuantityChange(e, product.id, -1)}
+                                    disabled={quantity <= 1}
+                                  >
+                                    <Minus className="h-4 w-4" />
+                                  </Button>
+                                  <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
+                                    {quantity}
+                                  </span>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-l-none"
+                                    onClick={(e) => handleQuantityChange(e, product.id, 1)}
+                                    disabled={quantity >= 10}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                
+                                {/* Add to Cart Button */}
+                                <Button 
+                                  size="sm"
+                                  className="flex-1 btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold shadow-[var(--shadow-medium)] transition-all duration-300 rounded-md disabled:opacity-50"
+                                  onClick={(e) => handleAddToCart(e, product)}
+                                  disabled={isAddingToCart === product.id || !product.available}
+                                >
+                                  <ShoppingBag className="mr-2 h-4 w-4" />
+                                  {isAddingToCart === product.id ? "Adding..." : "Add to Cart"}
+                                </Button>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                        
-                        {/* Minimal Product Info */}
-                        <div className="p-6 lg:p-8 bg-white">
-                          <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
-                            {product.name}
-                          </h3>
-                          <div className="flex items-center justify-between">
-                            <p className="text-2xl lg:text-3xl font-bold text-primary">
-                              {product.price}
-                            </p>
-                            <Button 
-                              size="icon"
-                              variant="outline"
-                              className="h-12 w-12 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 rounded-md btn-glow disabled:opacity-50"
-                              aria-label={`Add ${product.name} to cart`}
-                              onClick={() => handleAddToCart(product)}
-                              disabled={isAddingToCart === product.id || !product.available}
-                            >
-                              <ShoppingBag className="h-5 w-5" />
-                            </Button>
-                          </div>
-                          {!product.available && (
-                            <p className="text-xs text-foreground/40 mt-2">Out of stock</p>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ))}
+                        </CardContent>
+                      </Card>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
