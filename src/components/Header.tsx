@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   const location = useLocation();
@@ -55,20 +56,7 @@ const Header = () => {
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center group">
-            <h1 className={`font-display text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight transition-colors duration-500 ${
-              isScrolled 
-                ? "text-foreground" 
-                : "text-white drop-shadow-lg"
-            }`}>
-              <span className={`group-hover:opacity-80 transition-all duration-200 ${
-                isScrolled ? "text-primary" : "text-primary"
-              }`}>AFRIKA</span> EYEWEAR
-            </h1>
-          </Link>
-
+        <div className="flex items-center justify-between h-16 lg:h-28">
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-0.5">
             <Link 
@@ -119,6 +107,23 @@ const Header = () => {
               Contact
             </Link>
           </nav>
+
+          {/* Logo */}
+          <Link to="/" className="flex items-center group space-x-2">
+            <span className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-black transition-opacity duration-500 group-hover:opacity-80">
+              Afrika
+            </span>
+            <img 
+              src={logo} 
+              alt="Afrika Eyewear" 
+              className={`h-6 lg:h-24 transition-opacity duration-500 ${
+                isScrolled ? 'opacity-100' : 'opacity-90'
+              } group-hover:opacity-80`} 
+            />
+            <span className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-black transition-opacity duration-500 group-hover:opacity-80">
+              Eyewear
+            </span>
+          </Link>
 
           {/* Actions */}
           <div className="flex items-center space-x-2">
