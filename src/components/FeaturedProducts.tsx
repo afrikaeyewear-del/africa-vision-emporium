@@ -143,7 +143,7 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
       className={`animate-on-scroll ${isVisible ? "visible" : ""}`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
-      <Link to={`/shop#${product.handle}`} className="block">
+      <Link to={`/product/${product.handle}`} className="block">
         <Card 
           className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
         >
@@ -163,7 +163,7 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
                   asChild
                   className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-6 py-5 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
                 >
-                  <Link to={`/shop#${product.handle}`}>
+                  <Link to={`/product/${product.handle}`}>
                     <Eye className="mr-2 h-5 w-5" />
                     View Details
                   </Link>
@@ -187,9 +187,9 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
               
               {/* Quantity Selector and Add to Cart */}
               {product.available && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   {/* Quantity Selector */}
-                  <div className="flex items-center border border-border rounded-md">
+                  <div className="flex items-center border border-border rounded-md flex-shrink-0">
                     <Button
                       type="button"
                       variant="ghost"
@@ -218,12 +218,12 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
                   {/* Add to Cart Button */}
                   <Button 
                     size="sm"
-                    className="flex-1 btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold shadow-[var(--shadow-medium)] transition-all duration-300 rounded-md disabled:opacity-50"
+                    className="flex-1 min-w-0 btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold shadow-[var(--shadow-medium)] transition-all duration-300 rounded-md disabled:opacity-50 whitespace-nowrap"
                     onClick={handleAddToCart}
                     disabled={isAddingToCart || !product.available}
                   >
-                    <ShoppingBag className="mr-2 h-4 w-4" />
-                    {isAddingToCart ? "Adding..." : "Add to Cart"}
+                    <ShoppingBag className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{isAddingToCart ? "Adding..." : "Add to Cart"}</span>
                   </Button>
                 </div>
               )}
