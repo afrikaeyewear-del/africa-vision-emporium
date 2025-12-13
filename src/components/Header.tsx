@@ -3,6 +3,7 @@ import { ShoppingBag, Menu } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
+import Cart from "@/components/Cart";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
@@ -10,6 +11,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const { cartCount } = useCart();
 
   useEffect(() => {
@@ -153,25 +155,24 @@ const Header = () => {
 
           {/* Cart - Right */}
           <div className="flex items-center">
-            <Link to="/shop">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className={`relative h-10 w-10 transition-all duration-200 ${
-                  isScrolled
-                    ? "hover:bg-primary/10 hover:text-primary"
-                    : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
-                }`}
-                aria-label="Shopping cart"
-              >
-                <ShoppingBag className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] min-w-[1rem] h-4 px-1 rounded-full flex items-center justify-center font-semibold">
-                    {cartCount > 99 ? '99+' : cartCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className={`relative h-10 w-10 transition-all duration-200 ${
+                isScrolled
+                  ? "hover:bg-primary/10 hover:text-primary"
+                  : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-md"
+              }`}
+              aria-label="Shopping cart"
+              onClick={() => setCartOpen(true)}
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] min-w-[1rem] h-4 px-1 rounded-full flex items-center justify-center font-semibold">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Button>
           </div>
         </div>
 
@@ -223,6 +224,7 @@ const Header = () => {
           </nav>
         )}
       </div>
+      <Cart open={cartOpen} onOpenChange={setCartOpen} />
     </header>
   );
 };
