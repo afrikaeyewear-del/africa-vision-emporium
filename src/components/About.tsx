@@ -1,6 +1,7 @@
 import { Sparkles, Award, Globe } from "lucide-react";
 import { useRef } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import logo from "@/assets/logo.png";
 
 const features = [
   {
@@ -44,6 +45,22 @@ const About = () => {
               </span>
               <div className="h-px w-12 bg-primary" />
             </div>
+            
+            {/* Logo */}
+            <div className="flex items-center gap-3 mb-6 lg:mb-8">
+              <span className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+                Afrika
+              </span>
+              <img 
+                src={logo} 
+                alt="Afrika Eyewear Logo" 
+                className="h-12 lg:h-20" 
+              />
+              <span className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+                Eyewear
+              </span>
+            </div>
+            
             <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 lg:mb-8 tracking-tight leading-[0.95]">
               Vision Inspired by
               <br />
@@ -62,34 +79,57 @@ const About = () => {
             </div>
           </div>
 
-          {/* Features */}
-          <div className="grid gap-6 lg:gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div 
-                  key={index}
-                  className={`animate-on-scroll ${isVisible ? "visible" : ""}`}
-                  style={{ transitionDelay: `${(index + 1) * 0.15}s` }}
-                >
-                  <div className="group flex gap-6 lg:gap-8 p-8 lg:p-10 bg-white rounded-lg border-0 hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-1">
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-                        <Icon className="w-8 h-8 lg:w-10 lg:h-10 text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-xl lg:text-2xl mb-3 text-foreground group-hover:text-primary transition-colors duration-300">
-                        {feature.title}
-                      </h3>
-                      <p className="text-base lg:text-lg text-foreground/60 font-light leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </div>
+          {/* Store Image and Features */}
+          <div className="space-y-6 lg:space-y-8">
+            {/* Store Image Section */}
+            <div className={`animate-on-scroll ${isVisible ? "visible" : ""}`}>
+              <div className="relative aspect-[4/3] bg-muted/20 rounded-lg overflow-hidden border border-border/40 shadow-[var(--shadow-soft)]">
+                {/* Placeholder for store image - user can replace this */}
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
+                  <div className="text-center p-8">
+                    <p className="text-foreground/40 text-sm lg:text-base mb-2">Store Image</p>
+                    <p className="text-foreground/30 text-xs">Add your store image here</p>
                   </div>
                 </div>
-              );
-            })}
+                {/* Uncomment and replace with actual image when ready:
+                <img 
+                  src="/path-to-your-store-image.jpg" 
+                  alt="AFRIKA EYEWEAR Store" 
+                  className="w-full h-full object-cover"
+                />
+                */}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid gap-6 lg:gap-8">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div 
+                    key={index}
+                    className={`animate-on-scroll ${isVisible ? "visible" : ""}`}
+                    style={{ transitionDelay: `${(index + 1) * 0.15}s` }}
+                  >
+                    <div className="group flex gap-6 lg:gap-8 p-8 lg:p-10 bg-white rounded-lg border-0 hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-1">
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-xl bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                          <Icon className="w-8 h-8 lg:w-10 lg:h-10 text-primary" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-xl lg:text-2xl mb-3 text-foreground group-hover:text-primary transition-colors duration-300">
+                          {feature.title}
+                        </h3>
+                        <p className="text-base lg:text-lg text-foreground/60 font-light leading-relaxed">
+                          {feature.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
