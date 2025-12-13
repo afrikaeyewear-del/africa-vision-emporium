@@ -279,6 +279,178 @@ export async function addToCart(
   }
 }
 
+const CART_LINES_REMOVE_MUTATION = `
+  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart {
+        id
+        checkoutUrl
+        totalQuantity
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  product {
+                    title
+                    images(first: 1) {
+                      edges {
+                        node {
+                          url
+                        }
+                      }
+                    }
+                  }
+                  price {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+        cost {
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+const CART_LINES_UPDATE_MUTATION = `
+  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+        checkoutUrl
+        totalQuantity
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  product {
+                    title
+                    images(first: 1) {
+                      edges {
+                        node {
+                          url
+                        }
+                      }
+                    }
+                  }
+                  price {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+        cost {
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+/**
+ * Remove item from cart
+ */
+export async function removeFromCart(
+  cartId: string,
+  lineId: string
+): Promise<Cart> {
+  try {
+    const response = await shopify.request<{
+      cartLinesRemove: {
+        cart: Cart | null;
+        userErrors: Array<{ field: string[]; message: string }>;
+      };
+    }>(CART_LINES_REMOVE_MUTATION, {
+      cartId,
+      lineIds: [lineId],
+    });
+
+    if (response.data.cartLinesRemove.userErrors && response.data.cartLinesRemove.userErrors.length > 0) {
+      throw new Error(response.data.cartLinesRemove.userErrors.map(e => e.message).join(', '));
+    }
+
+    if (!response.data.cartLinesRemove.cart) {
+      throw new Error('Failed to remove item from cart');
+    }
+
+    return response.data.cartLinesRemove.cart;
+  } catch (error) {
+    console.error('Error removing from cart:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update item quantity in cart
+ */
+export async function updateCartLine(
+  cartId: string,
+  lineId: string,
+  quantity: number
+): Promise<Cart> {
+  try {
+    const response = await shopify.request<{
+      cartLinesUpdate: {
+        cart: Cart | null;
+        userErrors: Array<{ field: string[]; message: string }>;
+      };
+    }>(CART_LINES_UPDATE_MUTATION, {
+      cartId,
+      lines: [
+        {
+          id: lineId,
+          quantity,
+        },
+      ],
+    });
+
+    if (response.data.cartLinesUpdate.userErrors && response.data.cartLinesUpdate.userErrors.length > 0) {
+      throw new Error(response.data.cartLinesUpdate.userErrors.map(e => e.message).join(', '));
+    }
+
+    if (!response.data.cartLinesUpdate.cart) {
+      throw new Error('Failed to update cart item');
+    }
+
+    return response.data.cartLinesUpdate.cart;
+  } catch (error) {
+    console.error('Error updating cart:', error);
+    throw error;
+  }
+}
+
 /**
  * Get or create cart (helper function)
  */
