@@ -31,14 +31,25 @@ const Contact = () => {
     resolver: zodResolver(contactFormSchema),
   });
 
-  const onSubmit = (data: ContactFormValues) => {
+  const onSubmit = async (data: ContactFormValues) => {
     // In a real application, this would send the data to a backend
-    console.log("Form submitted:", data);
-    toast({
-      title: "Message sent!",
-      description: "Thank you for contacting us. We'll get back to you soon.",
-    });
-    reset();
+    try {
+      // TODO: Implement API call to send contact form data
+      // await sendContactForm(data);
+      
+      toast({
+        title: "Message sent!",
+        description: "Thank you for contacting us. We'll get back to you soon.",
+      });
+      reset();
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -209,6 +220,37 @@ const Contact = () => {
                           Saturday: 9:00 AM - 4:00 PM<br />
                           Sunday: Closed
                         </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/40 shadow-[var(--shadow-soft)]">
+                  <CardHeader className="pb-6">
+                    <CardTitle className="text-xl lg:text-2xl mb-2">Management Team</CardTitle>
+                    <CardDescription className="text-sm lg:text-base">
+                      Reach out to our management team directly.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold text-sm lg:text-base mb-1.5">General Manager</h4>
+                        <a href="mailto:manager@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
+                          manager@afrikaeyewear.co.za
+                        </a>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm lg:text-base mb-1.5">Sales Manager</h4>
+                        <a href="mailto:sales@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
+                          sales@afrikaeyewear.co.za
+                        </a>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm lg:text-base mb-1.5">Operations Manager</h4>
+                        <a href="mailto:operations@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
+                          operations@afrikaeyewear.co.za
+                        </a>
                       </div>
                     </div>
                   </CardContent>
