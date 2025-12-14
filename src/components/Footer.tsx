@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
 import logo from "@/assets/logo.png";
+import whatsappIcon from "@/assets/whatsapp.png";
+import { openWhatsApp, DEFAULT_WHATSAPP_MESSAGE } from "@/lib/utils/whatsapp";
 
 const Footer = () => {
   return (
@@ -106,19 +108,39 @@ const Footer = () => {
               <ul className="space-y-3 text-white/70 font-light text-sm lg:text-base">
                 <li className="flex items-start gap-2">
                   <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <a href="mailto:info@afrikaeyewear.co.za" className="hover:text-primary transition-colors duration-200">
-                    info@afrikaeyewear.co.za
+                  <a href="mailto:info@afrikaeyewear.com" className="hover:text-primary transition-colors duration-200">
+                    info@afrikaeyewear.com
                   </a>
                 </li>
                 <li className="flex items-start gap-2">
                   <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <a href="tel:+27111234567" className="hover:text-primary transition-colors duration-200">
-                    +27 (0) 11 123 4567
+                  <a href="tel:+27638402214" className="hover:text-primary transition-colors duration-200">
+                    +27 63 840 2214
                   </a>
                 </li>
                 <li className="flex items-start gap-2">
+                  <img 
+                    src={whatsappIcon} 
+                    alt="WhatsApp" 
+                    className="w-4 h-4 mt-0.5 flex-shrink-0 object-contain"
+                  />
+                  <button
+                    onClick={() => openWhatsApp(DEFAULT_WHATSAPP_MESSAGE)}
+                    className="hover:text-primary transition-colors duration-200 text-left"
+                  >
+                    Chat on WhatsApp
+                  </button>
+                </li>
+                <li className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <span>123 Sandton Drive,<br />Sandton, Johannesburg, 2196</span>
+                  <a 
+                    href="https://maps.google.com/?q=43+Bradford+Rd,+Eastgate+Mall,+Bedfordview,+Germiston,+2008" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors duration-200"
+                  >
+                    43 Bradford Rd, Eastgate Mall,<br />Bedfordview, Germiston, 2008
+                  </a>
                 </li>
             </ul>
             </div>
