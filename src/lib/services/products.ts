@@ -37,6 +37,20 @@ export interface ShopifyProduct {
       };
     }>;
   };
+  collections?: {
+    edges: Array<{
+      node: {
+        id: string;
+        title: string;
+        handle: string;
+        description: string;
+        image: {
+          url: string;
+          altText: string | null;
+        } | null;
+      };
+    }>;
+  };
 }
 
 export interface Product {
@@ -50,6 +64,14 @@ export interface Product {
   available: boolean;
 }
 
+export interface Collection {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  image: string;
+}
+
 export interface ProductDetail extends Product {
   images: string[];
   variants: Array<{
@@ -58,6 +80,7 @@ export interface ProductDetail extends Product {
     price: string;
     available: boolean;
   }>;
+  collections?: Collection[];
 }
 
 const PRODUCTS_QUERY = `
@@ -133,6 +156,86 @@ const PRODUCT_QUERY = `
               currencyCode
             }
             availableForSale
+          }
+        }
+      }
+      collections(first: 5) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            image {
+              url
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTIONS_QUERY = `
+  query getCollections($first: Int!) {
+    collections(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          image {
+            url
+            altText
+          }
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTION_PRODUCTS_QUERY = `
+  query getCollectionProducts($handle: String!, $first: Int!) {
+    collection(handle: $handle) {
+      id
+      title
+      handle
+      products(first: $first) {
+        edges {
+          node {
+            id
+            title
+            description
+            handle
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            images(first: 1) {
+              edges {
+                node {
+                  url
+                  altText
+                }
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  title
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  availableForSale
+                }
+              }
+            }
           }
         }
       }
@@ -212,6 +315,15 @@ export async function getProduct(handle: string): Promise<ProductDetail | null> 
       available: edge.node.availableForSale,
     }));
 
+    // Get collections
+    const collections = product.collections?.edges?.map(edge => ({
+      id: edge.node.id,
+      title: edge.node.title,
+      handle: edge.node.handle,
+      description: edge.node.description || '',
+      image: edge.node.image?.url || '/placeholder.svg',
+    })) || [];
+
     return {
       id: product.id,
       name: product.title,
@@ -223,9 +335,106 @@ export async function getProduct(handle: string): Promise<ProductDetail | null> 
       variantId: variant?.id || '',
       available: variant?.availableForSale || false,
       variants,
+      collections,
     };
   } catch (error) {
     console.error('Error fetching product:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch all collections from Shopify
+ */
+export async function getCollections(first: number = 20): Promise<Collection[]> {
+  // Check if Shopify is configured
+  if (!isShopifyConfigured) {
+    throw new Error('Shopify is not configured');
+  }
+
+  try {
+    const response = await shopify.request<{
+      collections: {
+        edges: Array<{
+          node: {
+            id: string;
+            title: string;
+            handle: string;
+            description: string;
+            image: {
+              url: string;
+              altText: string | null;
+            } | null;
+          };
+        }>;
+      };
+    }>(COLLECTIONS_QUERY, { first });
+
+    if (!response.data?.collections?.edges) {
+      return [];
+    }
+
+    return response.data.collections.edges.map((edge) => {
+      const collection = edge.node;
+      return {
+        id: collection.id,
+        title: collection.title,
+        handle: collection.handle,
+        description: collection.description || '',
+        image: collection.image?.url || '/placeholder.svg',
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching collections:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch products from a specific collection by handle
+ */
+export async function getProductsByCollection(handle: string, first: number = 50): Promise<Product[]> {
+  // Check if Shopify is configured
+  if (!isShopifyConfigured) {
+    throw new Error('Shopify is not configured');
+  }
+
+  try {
+    const response = await shopify.request<{
+      collection: {
+        id: string;
+        title: string;
+        handle: string;
+        products: {
+          edges: Array<{
+            node: ShopifyProduct;
+          }>;
+        };
+      } | null;
+    }>(COLLECTION_PRODUCTS_QUERY, { handle, first });
+
+    if (!response.data?.collection?.products?.edges) {
+      return [];
+    }
+
+    return response.data.collection.products.edges.map((edge) => {
+      const product = edge.node;
+      const variant = product.variants.edges[0]?.node;
+      const image = product.images.edges[0]?.node;
+
+      return {
+        id: product.id,
+        name: product.title,
+        price: formatPrice(product.priceRange.minVariantPrice.amount),
+        image: image?.url || '/placeholder.svg',
+        description: product.description || '',
+        handle: product.handle,
+        variantId: variant?.id || '',
+        available: variant?.availableForSale || false,
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching collection products:', error);
     throw error;
   }
 }
