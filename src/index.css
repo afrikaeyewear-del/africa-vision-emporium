@@ -164,4 +164,33 @@ All colors MUST be HSL.
   .floating-slow {
     animation: float-slow 8s ease-in-out infinite;
   }
+
+  /* Hover zoom & pan for desktop */
+  @media (hover: hover) and (pointer: fine) {
+    .hover-zoom-pan {
+      cursor: zoom-in;
+    }
+
+    .hover-zoom-pan:hover {
+      cursor: grab;
+    }
+
+    .hover-zoom-pan:hover:active {
+      cursor: grabbing;
+    }
+  }
+
+  /* WhatsApp button animation */
+  @keyframes bounce-subtle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+  }
 }
