@@ -1,7 +1,10 @@
-import { Sparkles, Award, Globe } from "lucide-react";
-import { useRef } from "react";
+import { Sparkles, Award, Globe, X, ZoomIn } from "lucide-react";
+import { useRef, useState } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
+import storeImage from "@/assets/store.jpg";
 
 const features = [
   {
@@ -24,6 +27,7 @@ const features = [
 const About = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const isVisible = useScrollAnimation(sectionRef);
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
 
   return (
     <section 
@@ -83,21 +87,21 @@ const About = () => {
           <div className="space-y-6 lg:space-y-8">
             {/* Store Image Section */}
             <div className={`animate-on-scroll ${isVisible ? "visible" : ""}`}>
-              <div className="relative aspect-[4/3] bg-muted/20 rounded-lg overflow-hidden border border-border/40 shadow-[var(--shadow-soft)]">
-                {/* Placeholder for store image - user can replace this */}
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
-                  <div className="text-center p-8">
-                    <p className="text-foreground/40 text-sm lg:text-base mb-2">Store Image</p>
-                    <p className="text-foreground/30 text-xs">Add your store image here</p>
+              <div 
+                className="relative aspect-[4/3] bg-muted/20 rounded-lg overflow-hidden border border-border/40 shadow-[var(--shadow-soft)] group cursor-pointer"
+                onClick={() => setIsImageZoomed(true)}
+              >
+                <img 
+                  src={storeImage} 
+                  alt="AFRIKA EYEWEAR Store - 43 Bradford Rd, Eastgate Mall, Bedfordview, Germiston, 2008" 
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  style={{ objectPosition: 'center 30%' }}
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3">
+                    <ZoomIn className="h-6 w-6 text-foreground" />
                   </div>
                 </div>
-                {/* Uncomment and replace with actual image when ready:
-                <img 
-                  src="/path-to-your-store-image.jpg" 
-                  alt="AFRIKA EYEWEAR Store" 
-                  className="w-full h-full object-cover"
-                />
-                */}
               </div>
             </div>
 
@@ -133,6 +137,27 @@ const About = () => {
           </div>
         </div>
       </div>
+
+      {/* Store Image Zoom Modal */}
+      <Dialog open={isImageZoomed} onOpenChange={setIsImageZoomed}>
+        <DialogContent className="max-w-4xl w-[90vw] max-h-[85vh] p-4 bg-black/95 border-0">
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-50 bg-white/10 hover:bg-white/20 text-white rounded-full"
+              onClick={() => setIsImageZoomed(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+            <img
+              src={storeImage}
+              alt="AFRIKA EYEWEAR Store - 43 Bradford Rd, Eastgate Mall, Bedfordview, Germiston, 2008"
+              className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
