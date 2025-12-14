@@ -144,42 +144,42 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
       <Link to={`/product/${product.handle}`} className="block">
-        <Card 
-          className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
-        >
-          <CardContent className="p-0">
-            {/* Large Product Image - Minimal Design */}
-            <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
-              <img 
-                src={product.image} 
-                alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                loading="lazy"
-              />
-              {/* Elegant Overlay on Hover */}
+      <Card 
+        className="group overflow-hidden border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg"
+      >
+        <CardContent className="p-0">
+          {/* Large Product Image - Minimal Design */}
+          <div className="relative aspect-[4/5] bg-muted/10 overflow-hidden">
+            <img 
+              src={product.image} 
+              alt={product.name}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            />
+            {/* Elegant Overlay on Hover */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-6 gap-2">
-                <Button 
-                  size="lg" 
+              <Button 
+                size="lg" 
                   asChild
                   className="btn-glow bg-primary hover:bg-primary/95 text-primary-foreground font-semibold px-6 py-5 shadow-[var(--shadow-luxury)] transition-all duration-300 rounded-md"
-                >
+              >
                   <Link to={`/product/${product.handle}`}>
-                    <Eye className="mr-2 h-5 w-5" />
-                    View Details
+                <Eye className="mr-2 h-5 w-5" />
+                View Details
                   </Link>
-                </Button>
-              </div>
+              </Button>
             </div>
-            
-            {/* Minimal Product Info */}
-            <div className="p-6 lg:p-8 bg-white">
-              <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
-                {product.name}
-              </h3>
+          </div>
+          
+          {/* Minimal Product Info */}
+          <div className="p-6 lg:p-8 bg-white">
+            <h3 className="font-display text-xl lg:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+              {product.name}
+            </h3>
               <div className="flex items-center justify-between mb-4">
-                <p className="text-2xl lg:text-3xl font-bold text-primary">
-                  {product.price}
-                </p>
+            <p className="text-2xl lg:text-3xl font-bold text-primary">
+              {product.price}
+            </p>
                 {!product.available && (
                   <span className="text-xs text-foreground/40 px-2 py-1 bg-muted rounded">Out of stock</span>
                 )}
@@ -227,21 +227,21 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
                   </Button>
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
       </Link>
     </div>
   );
 };
 
 const FeaturedProducts = () => {
-  // Fetch products from Shopify (limit to 12)
+  // Fetch products from Shopify (limit to 5)
   const { data: shopifyProducts, isLoading, error } = useQuery({
     queryKey: ['featured-products'],
     queryFn: async () => {
       try {
-        return await getProducts(12);
+        return await getProducts(5);
       } catch (err) {
         // If Shopify is not configured, return empty array to use fallback
         console.warn('Shopify products not available, using fallback:', err);
@@ -256,8 +256,8 @@ const FeaturedProducts = () => {
 
   // Use Shopify products if available, otherwise use fallback
   const products = shopifyProducts && shopifyProducts.length > 0 
-    ? shopifyProducts.slice(0, 12)
-    : fallbackProducts.slice(0, 12);
+    ? shopifyProducts.slice(0, 5)
+    : fallbackProducts.slice(0, 5);
 
   return (
     <section className="py-20 lg:py-32 px-0 bg-white geometric-accent relative overflow-hidden">
@@ -283,18 +283,18 @@ const FeaturedProducts = () => {
         </div>
       </div>
 
-      {/* Full-Width Products Showcase - Show up to 12 products */}
+      {/* Full-Width Products Showcase - Show up to 5 products */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-16 lg:mb-20">
         {isLoading ? (
           <div className="text-center py-12">
             <p className="text-foreground/60">Loading products...</p>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {products.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
+            <ProductCard key={product.id} product={product} index={index} />
+          ))}
+        </div>
         ) : (
           <div className="text-center py-12">
             <p className="text-foreground/60">No products available at the moment.</p>
@@ -304,17 +304,17 @@ const FeaturedProducts = () => {
 
       {/* CTA */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <Button 
+          <Button 
           asChild
-          size="lg"
-          variant="outline"
-          className="btn-glow group border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold px-12 py-8 text-xl transition-all duration-300 shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-luxury)] hover:-translate-y-1 rounded-md"
-        >
+            size="lg"
+            variant="outline"
+            className="btn-glow group border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold px-12 py-8 text-xl transition-all duration-300 shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-luxury)] hover:-translate-y-1 rounded-md"
+          >
           <Link to="/shop">
             View Full Collection
             <ArrowRight className="ml-3 h-6 w-6 transition-transform duration-300 group-hover:translate-x-2" />
           </Link>
-        </Button>
+          </Button>
       </div>
     </section>
   );
