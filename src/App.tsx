@@ -8,6 +8,9 @@ import { initScrollAnimations } from "./utils/scroll-animations";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingScreen from "./components/LoadingScreen";
 import { CartProvider } from "./contexts/CartContext";
+import { ScrollToTopOnRouteChange } from "./components/ScrollToTop";
+import ScrollToTop from "./components/ScrollToTop";
+import WhatsAppButton from "./components/WhatsAppButton";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Contact from "./pages/Contact";
@@ -58,6 +61,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <ScrollToTopOnRouteChange />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/shop" element={<Shop />} />
@@ -66,6 +70,8 @@ const App = () => {
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <ScrollToTop />
+              <WhatsAppButton />
             </BrowserRouter>
           </TooltipProvider>
         </CartProvider>
