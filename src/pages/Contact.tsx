@@ -5,11 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Loader2 } from "lucide-react";
+import whatsappIcon from "@/assets/whatsapp.png";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "@/hooks/use-toast";
+import { sendContactEmail } from "@/lib/services/email";
+import { useState } from "react";
+import { openWhatsApp, DEFAULT_WHATSAPP_MESSAGE } from "@/lib/utils/whatsapp";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -22,6 +26,7 @@ const contactFormSchema = z.object({
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -32,23 +37,31 @@ const Contact = () => {
   });
 
   const onSubmit = async (data: ContactFormValues) => {
-    // In a real application, this would send the data to a backend
+    setIsSubmitting(true);
     try {
-      // TODO: Implement API call to send contact form data
-      // await sendContactForm(data);
+      await sendContactEmail({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        subject: data.subject,
+        message: data.message,
+      });
       
       toast({
         title: "Message sent!",
-        description: "Thank you for contacting us. We'll get back to you soon.",
+        description: "Thank you for contacting us. We'll get back to you soon at " + data.email,
       });
       reset();
     } catch (error) {
       console.error('Error submitting contact form:', error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to send message. Please try again or email us directly at info@afrikaeyewear.com";
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -120,7 +133,7 @@ const Contact = () => {
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="+27 (0) 11 123 4567"
+                        placeholder="+27 (0) 63 840 2214"
                         {...register("phone")}
                       />
                     </div>
@@ -150,13 +163,37 @@ const Contact = () => {
                       )}
                     </div>
 
-                    <Button 
-                      type="submit" 
-                      size="lg" 
-                      className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-medium px-8 py-6 text-base lg:text-lg shadow-[var(--shadow-medium)] transition-all duration-300 hover:shadow-[var(--shadow-luxury)] hover:-translate-y-0.5 rounded-md"
-                    >
-                      Send Message
-                    </Button>
+                    <div className="space-y-3">
+                      <Button 
+                        type="submit" 
+                        size="lg" 
+                        disabled={isSubmitting}
+                        className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-medium px-8 py-6 text-base lg:text-lg shadow-[var(--shadow-medium)] transition-all duration-300 hover:shadow-[var(--shadow-luxury)] hover:-translate-y-0.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          "Send Message"
+                        )}
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="lg"
+                        variant="outline"
+                        onClick={() => openWhatsApp(DEFAULT_WHATSAPP_MESSAGE)}
+                        className="w-full border-2 border-primary/20 hover:border-primary bg-white hover:bg-primary/5 text-primary font-medium px-8 py-6 text-base lg:text-lg transition-all duration-300 hover:shadow-md rounded-md flex items-center justify-center gap-2"
+                      >
+                        <img 
+                          src={whatsappIcon} 
+                          alt="WhatsApp" 
+                          className="w-5 h-5 object-contain"
+                        />
+                        Chat on WhatsApp
+                      </Button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>
@@ -177,11 +214,14 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Address</h3>
-                        <p className="text-muted-foreground text-sm lg:text-base leading-relaxed">
-                          123 Sandton Drive<br />
-                          Sandton, Johannesburg<br />
-                          2196, South Africa
-                        </p>
+                        <a 
+                          href="https://maps.google.com/?q=43+Bradford+Rd,+Eastgate+Mall,+Bedfordview,+Germiston,+2008" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base leading-relaxed block"
+                        >
+                          43 Bradford Rd, Eastgate Mall, Bedfordview, Germiston, 2008
+                        </a>
                       </div>
                     </div>
 
@@ -191,9 +231,28 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Phone</h3>
-                        <a href="tel:+27111234567" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
-                          +27 (0) 11 123 4567
+                        <a href="tel:+27638402214" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
+                          +27 63 840 2214
                         </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center flex-shrink-0 transition-colors duration-200 p-2">
+                        <img 
+                          src={whatsappIcon} 
+                          alt="WhatsApp" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold mb-1.5 text-base lg:text-lg">WhatsApp</h3>
+                        <button
+                          onClick={() => openWhatsApp(DEFAULT_WHATSAPP_MESSAGE)}
+                          className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base text-left"
+                        >
+                          Chat with us on WhatsApp
+                        </button>
                       </div>
                     </div>
 
@@ -203,8 +262,8 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Email</h3>
-                        <a href="mailto:info@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
-                          info@afrikaeyewear.co.za
+                        <a href="mailto:info@afrikaeyewear.com" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
+                          info@afrikaeyewear.com
                         </a>
                       </div>
                     </div>
@@ -217,8 +276,8 @@ const Contact = () => {
                         <h3 className="font-semibold mb-1.5 text-base lg:text-lg">Business Hours</h3>
                         <p className="text-muted-foreground text-sm lg:text-base leading-relaxed">
                           Monday - Friday: 9:00 AM - 6:00 PM<br />
-                          Saturday: 9:00 AM - 4:00 PM<br />
-                          Sunday: Closed
+                          Saturday: 9:00 AM - 5:00 PM<br />
+                          Sunday: 9:00 AM - 5:00 PM
                         </p>
                       </div>
                     </div>
@@ -235,22 +294,29 @@ const Contact = () => {
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <div>
-                        <h4 className="font-semibold text-sm lg:text-base mb-1.5">General Manager</h4>
-                        <a href="mailto:manager@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
-                          manager@afrikaeyewear.co.za
-                        </a>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-sm lg:text-base mb-1.5">Sales Manager</h4>
-                        <a href="mailto:sales@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
-                          sales@afrikaeyewear.co.za
-                        </a>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-sm lg:text-base mb-1.5">Operations Manager</h4>
-                        <a href="mailto:operations@afrikaeyewear.co.za" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base">
-                          operations@afrikaeyewear.co.za
-                        </a>
+                        <h4 className="font-semibold text-sm lg:text-base mb-1.5">Managers</h4>
+                        <div className="space-y-2">
+                          <div>
+                            <a href="mailto:Lee@afrikaeyewear.com" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base block">
+                              Lee@afrikaeyewear.com
+                            </a>
+                          </div>
+                          <div>
+                            <a href="mailto:Pangolin@afrikaeyewear.com" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base block">
+                              Pangolin@afrikaeyewear.com
+                            </a>
+                          </div>
+                          <div>
+                            <a href="mailto:michelle@afrikaeyewear.com" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base block">
+                              Michelle@afrikaeyewear.com
+                            </a>
+                          </div>
+                          <div>
+                            <a href="mailto:Albert@afrikaeyewear.com" className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm lg:text-base block">
+                              Albert@afrikaeyewear.com
+                            </a>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
