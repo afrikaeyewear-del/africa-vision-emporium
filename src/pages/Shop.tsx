@@ -2,10 +2,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, ShoppingBag, Plus, Minus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Eye, ShoppingBag, Plus, Minus, Tag, X } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "@/lib/services/products";
+import { getProducts, getCollections, getProductsByCollection } from "@/lib/services/products";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -147,12 +147,17 @@ const Shop = () => {
   const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const { addItemToCart } = useCart();
+  const [searchParams] = useSearchParams();
+  const collectionHandle = searchParams.get('collection');
 
-  // Fetch products from Shopify
+  // Fetch products from Shopify (filtered by collection if specified)
   const { data: shopifyProducts, isLoading, error } = useQuery({
-    queryKey: ['shopify-products'],
+    queryKey: ['shopify-products', collectionHandle],
     queryFn: async () => {
       try {
+        if (collectionHandle) {
+          return await getProductsByCollection(collectionHandle, 50);
+        }
         return await getProducts(50);
       } catch (err) {
         // If Shopify is not configured, return empty array to use fallback
@@ -165,6 +170,21 @@ const Shop = () => {
     enabled: true,
     // Add timeout to prevent hanging
     gcTime: 5 * 60 * 1000,
+  });
+
+  // Fetch collections from Shopify
+  const { data: collections, isLoading: collectionsLoading } = useQuery({
+    queryKey: ['collections'],
+    queryFn: async () => {
+      try {
+        return await getCollections(10);
+      } catch (err) {
+        console.warn('Collections not available:', err);
+        return [];
+      }
+    },
+    retry: false,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Use Shopify products if available, otherwise use fallback
@@ -245,21 +265,88 @@ const Shop = () => {
           </div>
         </section>
 
+        {/* Collections Section */}
+        {collections && collections.length > 0 && (
+          <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-muted/20">
+            <div className="container mx-auto">
+              <div className="text-center mb-10 lg:mb-12">
+                <div className="inline-flex items-center gap-2 mb-4">
+                  <div className="h-px w-8 bg-primary" />
+                  <Tag className="w-5 h-5 text-primary" />
+                  <div className="h-px w-8 bg-primary" />
+                </div>
+                <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                  Shop by Collection
+                </h2>
+                <p className="text-foreground/60 text-lg max-w-2xl mx-auto">
+                  Explore our curated collections
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-4 lg:gap-6">
+                {collections.map((collection) => {
+                  const isActive = collectionHandle === collection.handle;
+                  return (
+                    <Link
+                      key={collection.id}
+                      to={`/shop?collection=${collection.handle}`}
+                      className="group"
+                    >
+                      <Card className={`border-0 bg-white hover:shadow-[var(--shadow-3d)] transition-all duration-500 hover:-translate-y-2 rounded-lg ${isActive ? 'ring-2 ring-primary shadow-[var(--shadow-luxury)] bg-primary/5' : ''}`}>
+                        <CardContent className="p-6 lg:p-8">
+                          <div className="flex items-center gap-2">
+                            <Tag className={`w-5 h-5 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-foreground/60 group-hover:text-primary'}`} />
+                            <h3 className={`font-display text-xl lg:text-2xl font-bold group-hover:text-primary transition-colors duration-300 ${isActive ? 'text-primary' : 'text-foreground'}`}>
+                              {collection.title}
+                            </h3>
+                            {isActive && (
+                              <span className="ml-2 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-semibold">
+                                Active
+                              </span>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Products Grid */}
         <section className="py-12 lg:py-16 px-0 bg-white geometric-accent relative overflow-hidden">
           {/* Subtle pattern overlay */}
           <div className="absolute inset-0 african-pattern opacity-20" />
           
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* Results count - Always show */}
-            <div className="mb-10 flex items-center justify-between">
-              <p className="text-sm lg:text-base text-foreground/60 font-light">
-                {isLoading ? (
-                  'Loading products...'
-                ) : (
-                  `Showing ${products.length} ${products.length === 1 ? 'product' : 'products'}`
+            {/* Filter indicator and results count */}
+            <div className="mb-10 flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4 flex-wrap">
+                {collectionHandle && collections && (
+                  <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full">
+                    <Tag className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      {collections.find(c => c.handle === collectionHandle)?.title || collectionHandle}
+                    </span>
+                    <Link
+                      to="/shop"
+                      className="ml-2 hover:bg-primary/20 rounded-full p-1 transition-colors"
+                      aria-label="Clear filter"
+                    >
+                      <X className="w-4 h-4" />
+                    </Link>
+                  </div>
                 )}
-              </p>
+                <p className="text-sm lg:text-base text-foreground/60 font-light">
+                  {isLoading ? (
+                    'Loading products...'
+                  ) : (
+                    `Showing ${products.length} ${products.length === 1 ? 'product' : 'products'}${collectionHandle ? ' in this collection' : ''}`
+                  )}
+                </p>
+              </div>
             </div>
 
             {/* Error State - Only show if there's an error and no products at all */}
